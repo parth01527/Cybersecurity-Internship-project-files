@@ -123,4 +123,4 @@ Through this task, the following concepts were practiced:
 
 Each section contains its corresponding screenshots, testing results, and mitigation notes.
 
-This task was performed entirely in a co
+This task was performed entirely in a controlled local cybersecurity laboratory environment.
