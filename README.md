@@ -279,7 +279,7 @@ Nmap was used to identify open ports, running services, service versions, and op
 * Comprehensive scanning
 * Banner grabbing
 
-The complete Nmap scan outputs, commands, screenshots, and related files are available in the [`Nmap`](./Nmap) directory.
+The complete Nmap scan outputs, commands, screenshots, and related files are available in the [`Nmap`](./Task%202/Nmap) directory.
 
 ---
 
@@ -314,9 +314,9 @@ The assessment identified vulnerabilities involving remote code execution, outda
 
 ### OpenVAS Documentation
 
-* [OpenVAS Scan Overview](./OpenVAS/openvas_scan_overview.md)
-* [OpenVAS Findings Summary](./OpenVAS/openvas_findings_summary.md)
-* [OpenVAS Vulnerability Report](./OpenVAS/openvas_report.pdf)
+* [OpenVAS Scan Overview](./Task%202/OpenVAS/openvas_scan_overview.md)
+* [OpenVAS Findings Summary](./Task%202/OpenVAS/openvas_findings_summary.md)
+* [OpenVAS Vulnerability Report](./Task%202/OpenVAS/openvas_report.pdf)
 
 ---
 
@@ -332,7 +332,7 @@ The analysis covered:
 * Unencrypted FTP authentication
 * SYN traffic associated with a simulated SYN flood
 
-Detailed analysis, screenshots, and related files are available in the [`Wireshark`](./Wireshark) directory.
+Detailed analysis, screenshots, and related files are available in the [`Wireshark`](./Task%202/Wireshark) directory.
 
 ---
 
@@ -376,7 +376,9 @@ The activities above demonstrated practical network reconnaissance, scanning, vu
 
 ## Overview
 
-This task focuses on identifying, exploiting, and mitigating common web application security vulnerabilities in a controlled laboratory environment using **Damn Vulnerable Web Application (DVWA)**.
+This section contains my work for **Task 3 of the ApexPlanet Cybersecurity Internship**.
+
+The task focused on identifying, exploiting, and mitigating common web application security vulnerabilities in a controlled laboratory environment using **Damn Vulnerable Web Application (DVWA)**.
 
 All testing was performed locally on Kali Linux against intentionally vulnerable applications and test configurations.
 
@@ -401,7 +403,7 @@ SQL Injection was demonstrated using DVWA. A UNION-based payload was used to ret
 
 A prepared-statement implementation was then created to demonstrate SQL Injection mitigation.
 
-[View SQL Injection Documentation](./SQL_Injection/)
+[View SQL Injection Documentation](./Task%203/SQL_Injection/)
 
 ---
 
@@ -411,7 +413,7 @@ Both Stored XSS and Reflected XSS were demonstrated in DVWA.
 
 A protected PHP page was also created using output encoding and Content Security Policy (CSP) to demonstrate mitigation.
 
-[View XSS Documentation](./XSS/)
+[View XSS Documentation](./Task%203/XSS/)
 
 ---
 
@@ -421,7 +423,7 @@ A CSRF attack was demonstrated by creating a forged password-change request agai
 
 Token-based CSRF protection was then implemented using a server-side session token. A forged request without the token was successfully rejected.
 
-[View CSRF Documentation](./CSRF/)
+[View CSRF Documentation](./Task%203/CSRF/)
 
 ---
 
@@ -431,7 +433,7 @@ Local File Inclusion (LFI) was demonstrated by reading the `/etc/passwd` file th
 
 Remote File Inclusion (RFI) was also demonstrated using a harmless PHP test payload hosted on a local HTTP server.
 
-[View File Inclusion Documentation](./File_Inclusion/)
+[View File Inclusion Documentation](./Task%203/File_Inclusion/)
 
 ---
 
@@ -439,7 +441,7 @@ Remote File Inclusion (RFI) was also demonstrated using a harmless PHP test payl
 
 Burp Suite was used to intercept DVWA login traffic, inspect and modify HTTP requests, and perform username fuzzing using Intruder.
 
-[View Burp Suite Documentation](./Burp_Suite/)
+[View Burp Suite Documentation](./Task%203/Burp_Suite/)
 
 ---
 
@@ -456,7 +458,7 @@ Security headers were then configured on the local Apache server using `mod_head
 
 The headers were verified using `curl`.
 
-[View Security Headers Documentation](./Security_Headers/)
+[View Security Headers Documentation](./Task%203/Security_Headers/)
 
 ---
 
@@ -507,9 +509,11 @@ This task was performed entirely in a controlled local cybersecurity laboratory 
 
 # Task 4 – Penetration Testing Workflow and System Hardening
 
-## Objective
+## Overview
 
-The objective of Task 4 was to understand and demonstrate a complete penetration testing workflow in an isolated and authorized lab environment.
+This section contains my work for **Task 4 of the ApexPlanet Cybersecurity Internship**.
+
+The task focused on understanding and demonstrating a complete penetration testing workflow in an isolated and authorized laboratory environment.
 
 The workflow covered:
 
@@ -867,227 +871,4 @@ Before hardening, the listening services were recorded using:
 netstat -tulpn
 ```
 
-This provided a baseline for comparison.
-
----
-
-## 9.2 Security Update Check
-
-The package repositories were refreshed using:
-
-```bash
-sudo apt-get update
-```
-
-Because Metasploitable2 is an intentionally vulnerable and extremely old lab image, a full system upgrade was not performed because it could alter or break the vulnerabilities required for the penetration-testing exercises.
-
----
-
-## 9.3 Firewall Configuration
-
-The VSFTPD backdoor-related TCP port was blocked using:
-
-```bash
-sudo iptables -A INPUT -p tcp --dport 6200 -j DROP
-```
-
-The firewall rule was verified using:
-
-```bash
-sudo iptables -L INPUT -n --line-numbers
-```
-
-This demonstrated how a firewall can be used to block unwanted traffic to a known malicious or vulnerable service port.
-
----
-
-## 9.4 Disable Unused FTP Service
-
-The FTP service was found to be managed through `xinetd`.
-
-The configuration was located at:
-
-```text
-/etc/xinetd.d/vsftpd
-```
-
-The FTP service was disabled by changing:
-
-```text
-disable = no
-```
-
-to:
-
-```text
-disable = yes
-```
-
-The change was verified with:
-
-```bash
-grep -i disable /etc/xinetd.d/vsftpd
-```
-
-The resulting configuration was:
-
-```text
-disable = yes
-```
-
-The `xinetd` configuration was then reloaded:
-
-```bash
-sudo kill -HUP $(pidof xinetd)
-```
-
-Finally, port 21 was checked:
-
-```bash
-sudo netstat -tulpn | grep :21
-```
-
-No output was returned, confirming that FTP was no longer listening on TCP port 21.
-
-A final service enumeration was also performed:
-
-```bash
-sudo netstat -tulpn
-```
-
-This provided the post-hardening service state.
-
----
-
-# 10. Findings and Security Impact
-
-| Finding                  | Impact                                      | Remediation                                  |
-| ------------------------ | ------------------------------------------- | -------------------------------------------- |
-| VSFTPD 2.3.4 backdoor    | Remote command execution and root access    | Remove/upgrade vulnerable FTP software       |
-| Exposed FTP service      | Increased attack surface                    | Disable FTP if not required                  |
-| Open TCP 6200            | Potential backdoor communication            | Block using firewall                         |
-| Weak `msfadmin` password | Password compromise                         | Use strong unique passwords                  |
-| Legacy SSH service       | Weak/obsolete cryptographic support         | Upgrade SSH                                  |
-| Outdated software        | Increased vulnerability exposure            | Apply security patches                       |
-| Phishing risk            | Credential theft through social engineering | User awareness training                      |
-| Malware risk             | Potential malicious execution               | Use endpoint protection and sandbox analysis |
-
----
-
-# 11. Penetration Testing Methodology Summary
-
-The task demonstrated the major phases of a penetration testing workflow:
-
-### 1. Reconnaissance
-
-Information about the target environment and network services was collected.
-
-### 2. Scanning
-
-Nmap was used to identify open ports and service versions.
-
-### 3. Exploitation
-
-The vulnerable VSFTPD service was exploited using Metasploit.
-
-### 4. Post-Exploitation
-
-Root-level access was verified and system information was collected.
-
-### 5. Password Attacks
-
-SSH password testing was attempted with Hydra, while an extracted password hash was successfully cracked using John the Ripper.
-
-### 6. Phishing Awareness
-
-A local, non-functional phishing-awareness simulation was created.
-
-### 7. Malware Analysis
-
-A harmless sample was examined using static and dynamic analysis techniques.
-
-### 8. System Hardening
-
-Firewall rules were applied and an unnecessary FTP service was disabled.
-
-### 9. Reporting
-
-The findings, security impact, limitations, and remediation recommendations were documented.
-
----
-
-# 12. Conclusion
-
-Task 4 provided practical experience with the complete penetration-testing lifecycle in an isolated cybersecurity lab.
-
-The exercises demonstrated how outdated services, weak credentials, exposed network ports, and social-engineering threats can increase an organization's attack surface.
-
-The task also demonstrated the importance of defensive measures such as:
-
-* Regular security updates
-* Strong passwords
-* Firewall rules
-* Removing unnecessary services
-* Security awareness training
-* Malware analysis
-* Continuous vulnerability assessment
-
-All activities were performed against an intentionally vulnerable Metasploitable2 system in a controlled lab environment for educational purposes.
-
----
-
-# Overall Skills Demonstrated
-
-Through Tasks 1–4, I gained practical exposure to:
-
-* Cybersecurity fundamentals
-* Linux fundamentals
-* Networking
-* Network reconnaissance
-* Port and service enumeration
-* Vulnerability assessment
-* Network traffic analysis
-* Web application security testing
-* SQL Injection
-* Cross-Site Scripting
-* CSRF
-* File Inclusion
-* Penetration testing
-* Password security
-* Password-hash analysis
-* Cryptography fundamentals
-* System hardening
-* Security awareness
-* Basic malware-analysis concepts
-* Security documentation and reporting
-
----
-
-# Tools & Technologies
-
-* Kali Linux
-* VirtualBox
-* Metasploitable2
-* DVWA
-* Nmap
-* OpenVAS / GVM
-* Wireshark
-* Burp Suite
-* Metasploit Framework
-* Hydra
-* John the Ripper
-* Netcat
-* OpenSSL
-* iptables
-* Linux
-* Apache
-* PHP
-* MariaDB
-
----
-
-# Disclaimer
-
-All security testing documented in this repository was performed for **educational purposes in controlled and authorized laboratory environments**.
-
-Metasploitable2 and DVWA were intentionally vulnerable systems used for cybersecurity training. No unauthorized systems or real-world targets were tested.
+This provided
